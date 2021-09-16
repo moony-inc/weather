@@ -22,13 +22,16 @@ export const actions = {
     commit('setWeatherData', weatherData);
   },
   async signIn({ commit, dispatch }, username) {
-    const { data } = await this.$axios.get('/auth.json');
-    const user = data.user;
+    try {
+      const { data: { user } } = await this.$axios.get('/auth.json');
 
-    if (username === user.name) {
-      commit('setUser', user);
-      await dispatch('fetchWeatherData', user.city);
-      this.$router.push('/weather');
+      if (username === user.name) {
+        commit('setUser', user);
+        await dispatch('fetchWeatherData', user.city);
+        this.$router.push('/weather');
+      }
+    } catch (error) {
+      console.log(error.message);
     }
   },
 };
