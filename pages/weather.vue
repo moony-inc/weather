@@ -1,9 +1,9 @@
 <template>
-  <div class="app-weather">
+  <div class="weather">
     <div class="weather-info">
       {{ weatherData }}
     </div>
-    <form>
+    <form class="city-form">
       <label>
         <div class="label">
           Another city?
@@ -18,6 +18,9 @@
         Yes, please
       </button>
     </form>
+    <button @click="signOut">
+      Want out of here
+    </button>
   </div>
 </template>
 
@@ -25,7 +28,7 @@
 import { mapState, mapActions } from 'vuex';
 
 export default {
-  middleware: 'auth',
+  middleware: 'weather',
   data: () => ({
     chosenCity: '',
   }),
@@ -38,6 +41,7 @@ export default {
   methods: {
     ...mapActions({
       fetchWeatherData: 'fetchWeatherData',
+      signOut: 'signOut',
     }),
     fetchNewWeatherData() {
       this.fetchWeatherData(this.chosenCity);
@@ -48,10 +52,21 @@ export default {
 </script>
 
 <style>
+.weather {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 .weather-info {
   width: fit-content;
   margin-bottom: 20px;
   font-size: 18px;
+}
+
+.city-form {
+  margin-bottom: 25px;
 }
 
 .label {

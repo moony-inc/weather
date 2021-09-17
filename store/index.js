@@ -16,22 +16,31 @@ export const actions = {
   async nuxtServerInit({ dispatch }) {
     await dispatch('fetchWeatherData', 'Kharkiv');
   },
+
+  // auth
+  async signIn({ commit, dispatch }, username) {
+    const { data: { users } } = await this.$axios.get('/auth.json');
+    const user = users.find(user => user.name === username);
+
+    if (user) {
+      commit('setUser', user);
+      await dispatch('fetchWeatherData', user.city);
+      this.$router.push('/weather');
+      localStorage.setItem('user', JSON.stringify(user));
+    } else {
+      throw new Error('No such user');
+    }
+  },
+  signOut({ commit }) {
+    commit('setUser', null);
+    this.$router.push('/');
+    localStorage.removeItem('user');
+  },
+
+  // weather api
   async fetchWeatherData({ commit }, city) {
     const weatherData = await this.$axios.$get(`http://wttr.in/${city}?format=3`);
 
     commit('setWeatherData', weatherData);
-  },
-  async signIn({ commit, dispatch }, username) {
-    try {
-      const { data: { user } } = await this.$axios.get('/auth.json');
-
-      if (username === user.name) {
-        commit('setUser', user);
-        await dispatch('fetchWeatherData', user.city);
-        this.$router.push('/weather');
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
   },
 };
